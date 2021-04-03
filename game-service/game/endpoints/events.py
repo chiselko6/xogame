@@ -17,6 +17,7 @@ db_client.init()
 
 
 class CommandSchema(BaseModel):
+    game_uuid: UUID
     name: str
     sequence: int
     player_uuid: UUID
@@ -39,8 +40,9 @@ def load_command(command: CommandSchema) -> BaseCommand:
     raise ValueError("Unknown command")
 
 
-@app.post("/apply/{game_uuid}")
-async def handle_event(game_uuid: UUID, command: CommandSchema):
+@app.post("/apply")
+async def handle_event(command: CommandSchema):
+    game_uuid = command.game_uuid
     command_event = apply_command(load_command(command))
 
     game_events = [
