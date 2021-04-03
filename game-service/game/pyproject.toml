@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "game"
+version = "0.1.0"
+description = "XO game domain events service"
+authors = ["chiselko6 <alex.limontov@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+fastapi = "^0.63.0"
+sqlalchemy = "^1.4.5"
+alembic = "^1.5.8"
+pydantic = "^1.8.1"
+psycopg2 = "^2.8.6"
+
+[tool.poetry.dev-dependencies]
+uvicorn = {extras = ["standard"], version = "^0.13.4"}
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
