@@ -1,11 +1,11 @@
 version: '3.7'
 services:
-  ws-frontend:
+  ws-frontend-service:
     build:
       context: ./ws_frontend/
       dockerfile: Dockerfile
-    ports:
-      - 8001:8000
+    expose:
+      - 8000
     env_file:
       - ./ws_frontend/.env
     healthcheck:
@@ -14,12 +14,20 @@ services:
       timeout: 2s
       retries: 3
       start_period: 5s
-  api:
+  ws-frontend-nginx:
+    build:
+      context: ./ws_frontend/nginx/
+      dockerfile: Dockerfile
+    ports:
+      - 8001:80
+    depends_on:
+      - ws-frontend-service
+  api-service:
     build:
       context: ./api/
       dockerfile: Dockerfile
-    ports:
-      - 8002:8000
+    expose:
+      - 8000
     env_file:
       - ./api/.env
     depends_on:
@@ -30,12 +38,20 @@ services:
       timeout: 2s
       retries: 3
       start_period: 5s
-  game:
+  api-nginx:
+    build:
+      context: ./api/nginx/
+      dockerfile: Dockerfile
+    ports:
+      - 8002:80
+    depends_on:
+      - api-service
+  game-service:
     build:
       context: ./game/
       dockerfile: Dockerfile
-    ports:
-      - 8003:8000
+    expose:
+      - 8000
     env_file:
       - ./game/.env
     depends_on:
@@ -46,6 +62,14 @@ services:
       timeout: 2s
       retries: 3
       start_period: 5s
+  game-nginx:
+    build:
+      context: ./game/nginx/
+      dockerfile: Dockerfile
+    ports:
+      - 8003:80
+    depends_on:
+      - ws-frontend-service
   api-db:
     image: postgres:12.0-alpine
     ports:
