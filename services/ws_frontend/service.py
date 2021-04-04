@@ -50,6 +50,11 @@ class Connections:
 connections = Connections()
 
 
+@app.get("/healthcheck")
+async def healthcheck():
+    return "OK"
+
+
 @app.websocket("/ws")
 async def websocket_handler(ws: WebSocket) -> None:
     await ws.accept()
