@@ -2,10 +2,10 @@ from operator import methodcaller
 from typing import Optional, Sequence
 from random import choice
 
-from events.base import BaseEvent
-from events.game import GameInitEventParams
-from events.moves import MoveEventParams
-from game.state import State
+from .events.base import BaseEvent
+from .events.game import GameInitEventParams
+from .events.moves import MoveEventParams
+from .state import State
 
 
 class Reducer:

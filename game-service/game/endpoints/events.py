@@ -1,11 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from typing import List
-from events.base import BaseEvent
+from domain.events.base import BaseEvent
 from db.client import DBClient
 from uuid import UUID
-from reducer import Reducer
-from events import load_event
-from events.commands import BaseCommand, GameInitCommand, GameInitCommandParams, MoveCommand, MoveCommandParams, apply_command
+from domain.reducer import Reducer
+from domain import load_event
+from domain.commands import BaseCommand, GameInitCommand, GameInitCommandParams, MoveCommand, MoveCommandParams, apply_command
 from pydantic import BaseModel
 from typing import Dict, Any
 from datetime import datetime

@@ -1,1 +1,1 @@
-env $(cat .env | xargs) poetry run uvicorn service:app
+env $(cat .env | xargs) poetry run uvicorn service:app --port 8001

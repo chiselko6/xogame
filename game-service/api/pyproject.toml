@@ -14,8 +14,6 @@ psycopg2 = "^2.8.6"
 python-jose = "^3.2.0"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 python-multipart = "^0.0.5"
-
-[tool.poetry.dev-dependencies]
 uvicorn = {extras = ["standard"], version = "^0.13.4"}
 
 [build-system]

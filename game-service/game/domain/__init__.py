@@ -1,16 +1,7 @@
 from db.schemas.eventlog import BaseEvent as DBEvent
-from .game import GameInitEvent, GameInitEventParams
-from .moves import MoveEvent, MoveEventParams
-from .base import BaseEvent
-
-__all__ = [
-    'BaseEvent',
-    'GameInitEvent',
-    'GameInitEventParams',
-    'MoveEvent',
-    'MoveEventParams',
-    'load_event',
-]
+from .events.game import GameInitEvent, GameInitEventParams
+from .events.moves import MoveEvent, MoveEventParams
+from .events.base import BaseEvent
 
 
 def load_event(event: DBEvent) -> BaseEvent:

@@ -2,10 +2,10 @@ from pydantic import BaseModel
 from uuid import UUID
 from collections import namedtuple
 from typing import ClassVar
-from events.base import BaseEvent
+from ..events.base import BaseEvent
 from datetime import datetime
-from events.game import GameInitEvent, GameInitEventParams
-from events.moves import MoveEvent, MoveEventParams
+from ..events.game import GameInitEvent, GameInitEventParams
+from ..events.moves import MoveEvent, MoveEventParams
 
 
 class BaseCommand(BaseModel):

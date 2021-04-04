@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from typing import Optional
 import sqlalchemy as sa
-from settings import DB_DIALECT, DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER
+from settings import Config
 from contextlib import contextmanager
 from uuid import UUID
 from .models import Player, User
@@ -10,10 +10,15 @@ from .models import Player, User
 class DBClient:
 
     def __init__(self) -> None:
+        self._config = Config()
         self._engine = None
 
     def init(self) -> None:
-        self._engine = create_engine(f"{DB_DIALECT}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
+        self._engine = create_engine(
+            f"{self._config.db_dialect}://{self._config.db_user}:"
+            f"{self._config.db_password}@{self._config.db_host}:"
+            f"{self._config.db_port}/{self._config.db_name}"
+        )
 
     def insert_player(self, player: Player) -> None:
         query = sa.insert(Player).values(

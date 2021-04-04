@@ -93,7 +93,7 @@ async def websocket_handler(ws: WebSocket) -> None:
     if connection_uuid is not None:
         connections.disconnect(connection_uuid)
 
-    print("Websocket disconnect ed")
+    print("Websocket disconnected")
 
 
 @app.post("/broadcast")

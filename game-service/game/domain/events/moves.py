@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from uuid import UUID
 from .base import BaseEvent
 
-from game.state import Cell
+from ..state import Cell
 
 
 class MoveEventParams(BaseModel):

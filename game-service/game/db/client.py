@@ -1,22 +1,27 @@
 from sqlalchemy import create_engine
 from typing import Sequence
 import sqlalchemy as sa
-from settings import DB_DIALECT, DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER
+from settings import Config
 from contextlib import contextmanager
 from uuid import UUID
 from .models import Eventlog
 from .schemas.eventlog import BaseEvent as DBEvent
-from events import BaseEvent, load_event
+from domain import BaseEvent, load_event
 import json
 
 
 class DBClient:
 
     def __init__(self) -> None:
+        self._config = Config()
         self._engine = None
 
     def init(self) -> None:
-        self._engine = create_engine(f"{DB_DIALECT}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
+        self._engine = create_engine(
+            f"{self._config.db_dialect}://{self._config.db_user}:"
+            f"{self._config.db_password}@{self._config.db_host}:"
+            f"{self._config.db_port}/{self._config.db_name}"
+        )
 
     def fetch_game_events(self, game_uuid: UUID) -> Sequence[BaseEvent]:
         with self.connect() as connection:

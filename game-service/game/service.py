@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from endpoints.events import app as events_app
+from endpoints.events import app as game_app
 
 app = FastAPI()
 
@@ -9,4 +9,4 @@ async def healthcheck():
     return "OK"
 
 
-app.mount("/events", events_app)
+app.mount("/game", game_app)

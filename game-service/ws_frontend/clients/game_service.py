@@ -14,7 +14,7 @@ class Client:
 
     async def send_command(self, body: Any) -> None:
         async with ClientSession() as session:
-            async with session.post(urljoin(self._host, "/events/apply"), data=body) as resp:
+            async with session.post(urljoin(self._host, "/game/apply"), data=body) as resp:
                 try:
                     resp.raise_for_status()
                 except HTTPError:

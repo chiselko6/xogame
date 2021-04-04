@@ -7,12 +7,14 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import jwt
 from fastapi import Depends, FastAPI, HTTPException, status
 from passlib.context import CryptContext
-from settings import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
+from settings import Config
 
 app = FastAPI()
 
 db_client = DBClient()
 db_client.init()
+
+config = Config()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -41,10 +43,10 @@ def authenticate_user(username: str, password: str) -> Optional[User]:
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
 
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.utcnow() + timedelta(minutes=config.jwt_token_access_expire_minutes)
     to_encode.update({"exp": expire})
 
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(to_encode, config.jwt_token_secret_key, algorithm=config.jwt_token_algorithm)
 
 
 @app.post("/token", response_model=TokenSchema)
