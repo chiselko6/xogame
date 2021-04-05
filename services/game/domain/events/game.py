@@ -1,6 +1,8 @@
-from .base import BaseEvent
 from uuid import UUID
+
 from pydantic import BaseModel
+
+from .base import BaseEvent
 
 
 class GameInitEventParams(BaseModel):

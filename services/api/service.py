@@ -1,7 +1,8 @@
 from fastapi import FastAPI
-from endpoints.player import app as player_app
+
 from endpoints.auth import app as auth_app
 from endpoints.game import app as game_app
+from endpoints.player import app as player_app
 
 app = FastAPI()
 

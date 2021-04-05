@@ -1,13 +1,13 @@
-from typing import Sequence
-from schemas.msg import WSResponse, BroadcastMessage
-from schemas.auth import decode_token
 from collections import defaultdict
-from typing import Optional, MutableMapping, MutableSet
+from typing import MutableMapping, MutableSet, Optional, Sequence
 from uuid import UUID, uuid4
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from clients.game_service import Client as GameServiceClient
-from clients.exceptions import ClientResponseError
 
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+
+from clients.exceptions import ClientResponseError
+from clients.game_service import Client as GameServiceClient
+from schemas.auth import decode_token
+from schemas.msg import BroadcastMessage, WSResponse
 
 app = FastAPI()
 game_service = GameServiceClient()
@@ -18,9 +18,10 @@ async def reply(ws: WebSocket, msg: WSResponse) -> None:
 
 
 class Connections:
-
     def __init__(self):
-        self._game_to_connections: MutableMapping[UUID, MutableSet[UUID]] = defaultdict(set)
+        self._game_to_connections: MutableMapping[UUID, MutableSet[UUID]] = defaultdict(
+            set
+        )
         self._connection_to_game: MutableMapping[UUID, UUID] = {}
         self._connections: MutableMapping[UUID, WebSocket] = {}
 
@@ -91,7 +92,9 @@ async def websocket_handler(ws: WebSocket) -> None:
                 try:
                     await game_service.send_command(msg["data"]["command"])
                 except ClientResponseError:
-                    await reply(ws, WSResponse(ok=False, error="Error applying the command"))
+                    await reply(
+                        ws, WSResponse(ok=False, error="Error applying the command")
+                    )
         else:
             await reply(ws, WSResponse(ok=False, error="Unknown message"))
 

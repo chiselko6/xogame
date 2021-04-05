@@ -1,9 +1,11 @@
-from pydantic import BaseModel
-from uuid import UUID
 from collections import namedtuple
-from typing import ClassVar
-from ..events.base import BaseEvent
 from datetime import datetime
+from typing import ClassVar
+from uuid import UUID
+
+from pydantic import BaseModel
+
+from ..events.base import BaseEvent
 from ..events.game import GameInitEvent, GameInitEventParams
 from ..events.moves import MoveEvent, MoveEventParams
 
@@ -30,7 +32,7 @@ class GameInitCommand(BaseCommand):
     params: GameInitCommandParams
 
 
-Cell = namedtuple('Cell', ['x', 'y'])
+Cell = namedtuple("Cell", ["x", "y"])
 
 
 class MoveCommandParams(BaseModel):
@@ -50,7 +52,7 @@ def apply_command(command: BaseCommand) -> BaseEvent:
             sequence=command.sequence,
             player_uuid=command.player_uuid,
             timestamp=command.timestamp,
-            params=GameInitEventParams(**command.params.dict())
+            params=GameInitEventParams(**command.params.dict()),
         )
     elif isinstance(command, MoveCommand):
         return MoveEvent(
@@ -58,7 +60,7 @@ def apply_command(command: BaseCommand) -> BaseEvent:
             sequence=command.sequence,
             player_uuid=command.player_uuid,
             timestamp=command.timestamp,
-            params=MoveEventParams(**command.params.dict())
+            params=MoveEventParams(**command.params.dict()),
         )
 
     raise ValueError("Unknown command")

@@ -1,17 +1,19 @@
-from sqlalchemy import create_engine
-from typing import Sequence
-import sqlalchemy as sa
-from settings import Config
+import json
 from contextlib import contextmanager
+from typing import Sequence
 from uuid import UUID
+
+import sqlalchemy as sa
+from sqlalchemy import create_engine
+
+from domain import BaseEvent, load_event
+from settings import Config
+
 from .models import Eventlog
 from .schemas.eventlog import BaseEvent as DBEvent
-from domain import BaseEvent, load_event
-import json
 
 
 class DBClient:
-
     def __init__(self) -> None:
         self._config = Config()
         self._engine = None
@@ -25,17 +27,19 @@ class DBClient:
 
     def get_game_events(self, game_uuid: UUID) -> Sequence[BaseEvent]:
         with self.connect() as connection:
-            query = sa.select(Eventlog).where(Eventlog.game_uuid == str(game_uuid)).order_by(Eventlog.sequence)
+            query = (
+                sa.select(Eventlog)
+                .where(Eventlog.game_uuid == str(game_uuid))
+                .order_by(Eventlog.sequence)
+            )
 
             db_events = connection.execute(query).fetchmany()
 
             events = []
             for db_event in db_events:
                 event_dict = dict(db_event._mapping)
-                params = json.loads(event_dict.pop('params'))
-                events.append(
-                    load_event(DBEvent(**event_dict, params=params))
-                )
+                params = json.loads(event_dict.pop("params"))
+                events.append(load_event(DBEvent(**event_dict, params=params)))
             return events
 
     def insert_events(self, events: Sequence[BaseEvent]) -> None:

@@ -1,8 +1,9 @@
+from uuid import UUID
+
 from fastapi import FastAPI, HTTPException
 
-from db.schemas.player import Player as PlayerSchema
 from db.client import DBClient
-from uuid import UUID
+from db.schemas.player import Player as PlayerSchema
 
 app = FastAPI()
 

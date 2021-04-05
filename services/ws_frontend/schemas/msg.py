@@ -1,6 +1,7 @@
-from pydantic import BaseModel
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 from uuid import UUID
+
+from pydantic import BaseModel
 
 
 class WSResponse(BaseModel):

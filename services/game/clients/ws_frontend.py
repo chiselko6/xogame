@@ -1,12 +1,15 @@
-from aiohttp import ClientSession, ClientResponseError as HTTPError
-from settings import Config
 from urllib.parse import urljoin
-from .exceptions import ClientResponseError
+
+from aiohttp import ClientResponseError as HTTPError
+from aiohttp import ClientSession
+
 from domain.events.base import BaseEvent
+from settings import Config
+
+from .exceptions import ClientResponseError
 
 
 class Client:
-
     def __init__(self) -> None:
         config = Config()
 
@@ -14,7 +17,9 @@ class Client:
 
     async def broadcast(self, event: BaseEvent) -> None:
         async with ClientSession() as session:
-            async with session.post(urljoin(self._host, "/broadcast"), data=event.json()) as resp:
+            async with session.post(
+                urljoin(self._host, "/broadcast"), data=event.json()
+            ) as resp:
                 try:
                     resp.raise_for_status()
                 except HTTPError:

@@ -1,14 +1,16 @@
-from sqlalchemy import create_engine
-from typing import Optional, List
-import sqlalchemy as sa
-from settings import Config
 from contextlib import contextmanager
+from typing import List, Optional
 from uuid import UUID
-from .models import Player, User, Game
+
+import sqlalchemy as sa
+from sqlalchemy import create_engine
+
+from settings import Config
+
+from .models import Game, Player, User
 
 
 class DBClient:
-
     def __init__(self) -> None:
         self._config = Config()
         self._engine = None
@@ -65,8 +67,12 @@ class DBClient:
             return connection.execute(query).fetchone()
 
     def set_opponent(self, game_uuid: UUID, opponent: UUID) -> None:
-        query = sa.update(Game).where(Game.uuid == str(game_uuid)).values(
-            player_opponent=opponent,
+        query = (
+            sa.update(Game)
+            .where(Game.uuid == str(game_uuid))
+            .values(
+                player_opponent=opponent,
+            )
         )
 
         with self.connect() as connection:

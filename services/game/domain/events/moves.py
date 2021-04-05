@@ -1,8 +1,9 @@
-from pydantic import BaseModel
 from uuid import UUID
-from .base import BaseEvent
+
+from pydantic import BaseModel
 
 from ..state import Cell
+from .base import BaseEvent
 
 
 class MoveEventParams(BaseModel):

@@ -1,10 +1,10 @@
-from typing import Dict, Sequence, List, Tuple, Optional, Any
-from pydantic import BaseModel, validator
-from enum import Enum
 from collections import namedtuple
 from dataclasses import dataclass
+from enum import Enum
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 from uuid import UUID
 
+from pydantic import BaseModel, validator
 
 MIN_GRID_WIDTH = 3
 MIN_GRID_HEIGHT = 3
@@ -19,7 +19,7 @@ class Player:
     uuid: UUID
 
 
-Cell = namedtuple('Cell', ['x', 'y'])
+Cell = namedtuple("Cell", ["x", "y"])
 
 
 class CellValue(Enum):
@@ -34,7 +34,9 @@ class Grid(BaseModel):
     height: int
 
     @validator("cells")
-    def validate_cells(cls, cells: Dict[Cell, CellValue], values: Dict[str, Any]) -> Dict[Cell, CellValue]:
+    def validate_cells(
+        cls, cells: Dict[Cell, CellValue], values: Dict[str, Any]
+    ) -> Dict[Cell, CellValue]:
         width = values["width"]
         height = values["height"]
 
@@ -66,13 +68,14 @@ class Grid(BaseModel):
                         for d in range(winning_line_length)
                     ]
 
-                    if all([
-                        0 <= cell.x < self.width and 0 <= cell.y < self.height
-                        for cell in cells_to_check
-                    ]):
-                        cell_values = [
-                            self.cells[cell].value
+                    if all(
+                        [
+                            0 <= cell.x < self.width and 0 <= cell.y < self.height
                             for cell in cells_to_check
+                        ]
+                    ):
+                        cell_values = [
+                            self.cells[cell].value for cell in cells_to_check
                         ]
 
                         if cell_values.count(cell_values[0]) == len(cell_values):
@@ -81,7 +84,6 @@ class Grid(BaseModel):
 
 
 class State:
-
     def __init__(self, grid_size: Tuple[int, int], winning_line: int) -> None:
         self._players: List[UUID] = []
         self._player_to_start: Optional[UUID] = None
@@ -101,7 +103,7 @@ class State:
                 Cell(x=x, y=y): CellValue.EMPTY
                 for x in range(width)
                 for y in range(height)
-            }
+            },
         )
         self._winning_line = winning_line
 

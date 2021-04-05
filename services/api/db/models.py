@@ -1,6 +1,8 @@
-from .base import Base
+from sqlalchemy import (Column, DateTime, ForeignKeyConstraint, String,
+                        UniqueConstraint)
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy import Column, DateTime, String, UniqueConstraint, ForeignKeyConstraint
+
+from .base import Base
 
 
 class User(Base):
@@ -11,7 +13,11 @@ class User(Base):
 class Player(Base):
     __table_args__ = (
         UniqueConstraint("username"),
-        ForeignKeyConstraint(columns=("username",), refcolumns=(User.username,), name='player_username_user_username_fk')
+        ForeignKeyConstraint(
+            columns=("username",),
+            refcolumns=(User.username,),
+            name="player_username_user_username_fk",
+        ),
     )
 
     uuid = Column(UUID, primary_key=True)
@@ -22,7 +28,11 @@ class Player(Base):
 class Game(Base):
     __table_args__ = (
         ForeignKeyConstraint(columns=("player_created",), refcolumns=(Player.uuid,)),
-        ForeignKeyConstraint(columns=("player_opponent",), refcolumns=(Player.uuid,), name='game_opponent_player_uuid_fk'),
+        ForeignKeyConstraint(
+            columns=("player_opponent",),
+            refcolumns=(Player.uuid,),
+            name="game_opponent_player_uuid_fk",
+        ),
     )
 
     uuid = Column(UUID, primary_key=True)

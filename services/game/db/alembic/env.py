@@ -1,12 +1,10 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config, engine
-from sqlalchemy import pool
+from alembic import context
 from pydantic import BaseSettings
+from sqlalchemy import engine, engine_from_config, pool
 
 from db import Base
-
-from alembic import context
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -36,7 +34,7 @@ class DBConfig(BaseSettings):
     password: str
 
     class Config:
-        env_prefix = 'DB_'
+        env_prefix = "DB_"
 
 
 def get_engine_url(config: DBConfig) -> str:
@@ -94,9 +92,7 @@ def run_migrations_online():
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+
 from endpoints.events import app as game_app
 
 app = FastAPI()

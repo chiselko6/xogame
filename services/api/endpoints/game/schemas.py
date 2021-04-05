@@ -1,7 +1,8 @@
-from pydantic import BaseModel
-from uuid import UUID
-from typing import List
 from datetime import datetime
+from typing import List
+from uuid import UUID
+
+from pydantic import BaseModel
 
 
 class GameCreateRequest(BaseModel):

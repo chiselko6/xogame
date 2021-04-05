@@ -1,14 +1,17 @@
-from fastapi import FastAPI, HTTPException
-from typing import List
-from domain.events.base import BaseEvent
-from db.client import DBClient
-from uuid import UUID
-from domain.reducer import Reducer
-from domain import load_event
-from domain.commands import BaseCommand, GameInitCommand, GameInitCommandParams, MoveCommand, MoveCommandParams, apply_command
-from pydantic import BaseModel
-from typing import Dict, Any
 from datetime import datetime
+from typing import Any, Dict, List
+from uuid import UUID
+
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
+from db.client import DBClient
+from domain import load_event
+from domain.commands import (BaseCommand, GameInitCommand,
+                             GameInitCommandParams, MoveCommand,
+                             MoveCommandParams, apply_command)
+from domain.events.base import BaseEvent
+from domain.reducer import Reducer
 
 app = FastAPI()
 
@@ -35,7 +38,9 @@ def load_command(command: CommandSchema) -> BaseCommand:
         if available_command[0].name == command.name:
             cmd_dict = command.dict()
             params = cmd_dict.pop("params")
-            return available_command[0](**cmd_dict, params=available_command[1](**params))
+            return available_command[0](
+                **cmd_dict, params=available_command[1](**params)
+            )
 
     raise ValueError("Unknown command")
 
@@ -46,8 +51,7 @@ async def handle_event(command: CommandSchema):
     command_event = apply_command(load_command(command))
 
     game_events = [
-        load_event(db_event)
-        for db_event in db_client.get_game_events(game_uuid)
+        load_event(db_event) for db_event in db_client.get_game_events(game_uuid)
     ]
 
     # verify the event is applicable
@@ -61,10 +65,7 @@ async def handle_event(command: CommandSchema):
 
 @app.get("/fetch/{game_uuid}", response_model=List[BaseEvent])
 async def fetch_events(game_uuid: UUID):
-    events = [
-        load_event(db_event)
-        for db_event in db_client.get_game_events(game_uuid)
-    ]
+    events = [load_event(db_event) for db_event in db_client.get_game_events(game_uuid)]
 
     if not events:
         raise HTTPException(status_code=404, detail="Game not found")

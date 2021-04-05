@@ -1,19 +1,29 @@
-from aiohttp import ClientSession, ClientResponseError as HTTPError
-from settings import Config
-from urllib.parse import urljoin
-from .exceptions import ClientResponseError
-from uuid import UUID
 from datetime import datetime
+from urllib.parse import urljoin
+from uuid import UUID
+
+from aiohttp import ClientResponseError as HTTPError
+from aiohttp import ClientSession
+
+from settings import Config
+
+from .exceptions import ClientResponseError
 
 
 class Client:
-
     def __init__(self) -> None:
         config = Config()
 
         self._host = config.game_service_host
 
-    async def start_game(self, *, grid_size: int, winning_line_length: int, initiator: UUID, opponent: UUID) -> None:
+    async def start_game(
+        self,
+        *,
+        grid_size: int,
+        winning_line_length: int,
+        initiator: UUID,
+        opponent: UUID
+    ) -> None:
         params = {
             "grid_width": grid_size,
             "grid_height": grid_size,
@@ -29,7 +39,9 @@ class Client:
             "params": params,
         }
         async with ClientSession() as session:
-            async with session.post(urljoin(self._host, "/game/apply"), data=payload) as resp:
+            async with session.post(
+                urljoin(self._host, "/game/apply"), data=payload
+            ) as resp:
                 try:
                     resp.raise_for_status()
                 except HTTPError:

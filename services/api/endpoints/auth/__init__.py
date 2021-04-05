@@ -1,13 +1,16 @@
 from typing import Optional
-from db.client import DBClient
-from .schemas import Token, AuthTokenData, IntraTokenData, TokenType
-from db.models import User
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi import Depends, FastAPI, HTTPException, status
-from passlib.context import CryptContext
-from settings import Config
 from uuid import UUID
-from .util import encode_intra_token, encode_auth_token, decode_auth_token
+
+from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from passlib.context import CryptContext
+
+from db.client import DBClient
+from db.models import User
+from settings import Config
+
+from .schemas import AuthTokenData, IntraTokenData, Token, TokenType
+from .util import decode_auth_token, encode_auth_token, encode_intra_token
 
 app = FastAPI()
 
@@ -47,7 +50,10 @@ async def get_intra_token(game_uuid: UUID, token: str = Depends(oauth2_scheme)):
     """Exchange Bearer token to intra token."""
 
     decoded = decode_auth_token(token)
-    return Token(access_token=encode_intra_token(decoded.username, game_uuid), token_type=TokenType.INTRA)
+    return Token(
+        access_token=encode_intra_token(decoded.username, game_uuid),
+        token_type=TokenType.INTRA,
+    )
 
 
 @app.post("/login", response_model=Token)

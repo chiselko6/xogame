@@ -1,7 +1,8 @@
-from pydantic import BaseModel
 from datetime import datetime
 from typing import ClassVar
 from uuid import UUID
+
+from pydantic import BaseModel
 
 
 class BaseEvent(BaseModel):
