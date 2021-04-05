@@ -17,6 +17,8 @@ class Client:
         self._host = config.ws_frontend_host
 
     async def broadcast(self, event: BaseEvent) -> None:
+        """Broadcast the given event"""
+
         async with ClientSession() as session:
             async with session.post(
                 urljoin(self._host, "/broadcast"), json=json.loads(event.json())

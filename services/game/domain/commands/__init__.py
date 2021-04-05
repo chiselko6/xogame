@@ -55,6 +55,8 @@ class MoveCommand(BaseCommand):
 
 
 def apply_command(command: BaseCommand) -> BaseEvent:
+    """Produce event of a given command"""
+
     if isinstance(command, GameInitCommand):
         return GameInitEvent(
             game_uuid=command.game_uuid,

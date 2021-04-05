@@ -19,6 +19,8 @@ async def reply(ws: WebSocket, msg: WSResponse) -> None:
 
 
 class Connections:
+    """Cache for persistent connections"""
+
     def __init__(self):
         self._game_to_connections: MutableMapping[UUID, MutableSet[UUID]] = defaultdict(
             set
@@ -108,7 +110,9 @@ async def websocket_handler(ws: WebSocket) -> None:
 
 
 @app.post("/broadcast")
-async def publish_msg(message: BroadcastEvent):
+async def broadcast_msg(message: BroadcastEvent):
+    """Broadcast event to all subscribers"""
+
     for connection in connections.get_connections(message.game_uuid):
         await connection.send_json(
             {"type": "broadcast", "data": json.loads(message.json())}

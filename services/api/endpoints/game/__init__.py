@@ -22,6 +22,8 @@ game_service_client = Client()
 
 @app.post("/", response_model=GameCreateResponse)
 async def create_game(token: str = Depends(oauth2_scheme)):
+    """Create a game object"""
+
     decoded = decode_auth_token(token)
 
     player = db_client.get_player_by_username(decoded.username)
@@ -35,6 +37,8 @@ async def create_game(token: str = Depends(oauth2_scheme)):
 
 @app.get("/awaiting", response_model=AwaitingGamesResponse)
 async def get_awaiting_games(token: str = Depends(oauth2_scheme)):
+    """Get a list of games in waiting status"""
+
     return AwaitingGamesResponse(
         games=[
             AwaitingGame(
@@ -49,6 +53,8 @@ async def get_awaiting_games(token: str = Depends(oauth2_scheme)):
 
 @app.post("/connect")
 async def connect(game: ConnectGameRequest, token: str = Depends(oauth2_scheme)):
+    """Connect current player to the specified game"""
+
     decoded = decode_auth_token(token)
 
     player = db_client.get_player_by_username(decoded.username)

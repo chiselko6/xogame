@@ -17,9 +17,13 @@ class Reducer:
         return self._state
 
     def apply_event(self, event: BaseEvent) -> None:
+        """Apply a single event to the state"""
+
         methodcaller(f"apply__{event.name}", self, event.params)
 
     def apply_events(self, events: Sequence[BaseEvent]) -> None:
+        """Apply a sequence of events to the state"""
+
         for event in events:
             methodcaller(f"apply__{event.name}", self, event.params)
 

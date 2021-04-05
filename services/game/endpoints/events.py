@@ -48,7 +48,9 @@ def load_command(command: CommandSchema) -> BaseCommand:
 
 
 @app.post("/apply")
-async def handle_event(command: CommandSchema):
+async def apply_command(command: CommandSchema):
+    """Apply the command"""
+
     game_uuid = command.game_uuid
     command_event = apply_command(load_command(command))
 
@@ -67,6 +69,8 @@ async def handle_event(command: CommandSchema):
 
 @app.get("/fetch/{game_uuid}", response_model=List[BaseEvent])
 async def fetch_events(game_uuid: UUID):
+    """Get a list of game events"""
+
     events = db_client.get_game_events(game_uuid)
 
     if not events:

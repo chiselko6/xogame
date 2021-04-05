@@ -25,6 +25,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Compare the passwords using hash"""
+
     return pwd_context.verify(plain_password, hashed_password)
 
 
@@ -37,17 +39,15 @@ def authenticate_user(username: str, password: str) -> Optional[User]:
     if not user:
         return None
 
-    if password != user.password:
+    if not verify_password(password, user.password):
         return None
-    # if not verify_password(password, user.password):
-    #     return None
 
     return user
 
 
 @app.get("/intratoken/{game_uuid}", response_model=Token)
 async def get_intra_token(game_uuid: UUID, token: str = Depends(oauth2_scheme)):
-    """Exchange Bearer token to intra token."""
+    """Exchange Bearer token to intratoken."""
 
     decoded = decode_auth_token(token)
     return Token(
@@ -58,9 +58,7 @@ async def get_intra_token(game_uuid: UUID, token: str = Depends(oauth2_scheme)):
 
 @app.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    """
-    Login to the app and receive a JWT token to use in other services.
-    """
+    """Login to the app and receive a Bearer token"""
 
     user = authenticate_user(form_data.username, form_data.password)
 

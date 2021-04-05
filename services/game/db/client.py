@@ -15,6 +15,8 @@ from .models import Eventlog
 
 
 def load_event(event: Dict[str, Any], params: Dict[str, Any]) -> BaseEvent:
+    """Map raw event data to the right event object"""
+
     game_event_params = [
         (GameInitEvent, GameInitEventParams),
         (MoveEvent, MoveEventParams),
@@ -40,6 +42,8 @@ class DBClient:
         )
 
     def get_game_events(self, game_uuid: UUID) -> Sequence[BaseEvent]:
+        """Get a list of all game events ordered by sequence"""
+
         with self.connect() as connection:
             query = (
                 sa.select(Eventlog)
@@ -57,6 +61,8 @@ class DBClient:
             return events
 
     def insert_events(self, events: Sequence[BaseEvent]) -> None:
+        """Insert new events"""
+
         with self.transaction() as transaction:
             for event in events:
                 query = sa.insert(Eventlog).values(

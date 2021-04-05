@@ -26,6 +26,8 @@ class Client:
         initiator: UUID,
         opponent: UUID
     ) -> None:
+        """Send a command to the game service to start the game"""
+
         params = {
             "grid_width": grid_size,
             "grid_height": grid_size,

@@ -17,6 +17,8 @@ class Client:
         self._host = config.game_service_host
 
     async def send_command(self, body: Mapping[str, Any]) -> None:
+        """Send the command to game service"""
+
         async with ClientSession() as session:
             async with session.post(
                 urljoin(self._host, "/game/apply"), json=json.loads(json.dumps(body))
