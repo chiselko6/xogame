@@ -10,15 +10,8 @@ db_client = DBClient()
 db_client.init()
 
 
-@app.post("/", response_model=PlayerSchema)
-async def create_player(player: PlayerSchema):
-    db_client.insert_player(player)
-
-    return player
-
-
 @app.get("/{player_uuid}", response_model=PlayerSchema)
-async def read_user(player_uuid: UUID):
+async def get_player(player_uuid: UUID):
     player = db_client.get_player_by_uuid(player_uuid)
 
     if player is None:

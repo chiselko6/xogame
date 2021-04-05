@@ -12,6 +12,7 @@ alembic = "^1.5.8"
 pydantic = "^1.8.1"
 psycopg2 = "^2.8.6"
 uvicorn = {extras = ["standard"], version = "^0.13.4"}
+aiohttp = "^3.7.4"
 
 [build-system]
 requires = ["poetry>=0.12"]

@@ -1,13 +1,13 @@
 from typing import Optional
 from db.client import DBClient
-from datetime import datetime, timedelta
-from db.schemas.auth import Token as TokenSchema
+from .schemas import Token, AuthTokenData, IntraTokenData, TokenType
 from db.models import User
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from jose import jwt
 from fastapi import Depends, FastAPI, HTTPException, status
 from passlib.context import CryptContext
 from settings import Config
+from uuid import UUID
+from .util import encode_intra_token, encode_auth_token, decode_auth_token
 
 app = FastAPI()
 
@@ -18,7 +18,7 @@ config = Config()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -34,23 +34,28 @@ def authenticate_user(username: str, password: str) -> Optional[User]:
     if not user:
         return None
 
-    if not verify_password(password, user.password):
+    if password != user.password:
         return None
+    # if not verify_password(password, user.password):
+    #     return None
 
     return user
 
 
-def create_access_token(data: dict) -> str:
-    to_encode = data.copy()
+@app.get("/intratoken/{game_uuid}", response_model=Token)
+async def get_intra_token(game_uuid: UUID, token: str = Depends(oauth2_scheme)):
+    """Exchange Bearer token to intra token."""
 
-    expire = datetime.utcnow() + timedelta(minutes=config.jwt_token_access_expire_minutes)
-    to_encode.update({"exp": expire})
-
-    return jwt.encode(to_encode, config.jwt_token_secret_key, algorithm=config.jwt_token_algorithm)
+    decoded = decode_auth_token(token)
+    return Token(access_token=encode_intra_token(decoded.username, game_uuid), token_type=TokenType.INTRA)
 
 
-@app.post("/token", response_model=TokenSchema)
+@app.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    """
+    Login to the app and receive a JWT token to use in other services.
+    """
+
     user = authenticate_user(form_data.username, form_data.password)
 
     if not user:
@@ -59,7 +64,5 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token = create_access_token(
-        data={"sub": user.username}
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
+    access_token = encode_auth_token(username=user.username)
+    return Token(access_token=access_token, token_type=TokenType.BEARER)

@@ -47,7 +47,7 @@ async def handle_event(command: CommandSchema):
 
     game_events = [
         load_event(db_event)
-        for db_event in db_client.fetch_game_events(game_uuid)
+        for db_event in db_client.get_game_events(game_uuid)
     ]
 
     # verify the event is applicable
@@ -56,14 +56,14 @@ async def handle_event(command: CommandSchema):
     reducer.apply_event(command_event)
 
     # save the event
-    db_client.insert_events(game_uuid, [command_event])
+    db_client.insert_events([command_event])
 
 
 @app.get("/fetch/{game_uuid}", response_model=List[BaseEvent])
 async def fetch_events(game_uuid: UUID):
     events = [
         load_event(db_event)
-        for db_event in db_client.fetch_game_events(game_uuid)
+        for db_event in db_client.get_game_events(game_uuid)
     ]
 
     if not events:

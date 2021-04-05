@@ -4,8 +4,8 @@ services:
     build:
       context: ./ws_frontend/
       dockerfile: Dockerfile
-    expose:
-      - 8000
+    ports:
+      - 8001:8000
     env_file:
       - ./ws_frontend/.env
     healthcheck:
@@ -14,14 +14,6 @@ services:
       timeout: 2s
       retries: 3
       start_period: 5s
-  ws-frontend-nginx:
-    build:
-      context: ./ws_frontend/nginx/
-      dockerfile: Dockerfile
-    ports:
-      - 8001:80
-    depends_on:
-      - ws-frontend-service
   api-service:
     build:
       context: ./api/

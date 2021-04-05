@@ -18,7 +18,7 @@ COPY pyproject.toml poetry.lock ./
 RUN poetry install --no-dev
 
 # copy project
-COPY clients/ clients
+COPY clients/ clients/
 COPY schemas/ schemas/
 COPY service.py settings.py ./
 

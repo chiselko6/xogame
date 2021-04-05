@@ -10,6 +10,7 @@ from ..events.moves import MoveEvent, MoveEventParams
 
 class BaseCommand(BaseModel):
     name: ClassVar
+    game_uuid: UUID
     sequence: int
     player_uuid: UUID
     timestamp: datetime
@@ -45,6 +46,7 @@ class MoveCommand(BaseCommand):
 def apply_command(command: BaseCommand) -> BaseEvent:
     if isinstance(command, GameInitCommand):
         return GameInitEvent(
+            game_uuid=command.game_uuid,
             sequence=command.sequence,
             player_uuid=command.player_uuid,
             timestamp=command.timestamp,
@@ -52,6 +54,7 @@ def apply_command(command: BaseCommand) -> BaseEvent:
         )
     elif isinstance(command, MoveCommand):
         return MoveEvent(
+            game_uuid=command.game_uuid,
             sequence=command.sequence,
             player_uuid=command.player_uuid,
             timestamp=command.timestamp,

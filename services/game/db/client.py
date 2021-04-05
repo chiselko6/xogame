@@ -23,7 +23,7 @@ class DBClient:
             f"{self._config.db_port}/{self._config.db_name}"
         )
 
-    def fetch_game_events(self, game_uuid: UUID) -> Sequence[BaseEvent]:
+    def get_game_events(self, game_uuid: UUID) -> Sequence[BaseEvent]:
         with self.connect() as connection:
             query = sa.select(Eventlog).where(Eventlog.game_uuid == str(game_uuid)).order_by(Eventlog.sequence)
 
@@ -38,11 +38,11 @@ class DBClient:
                 )
             return events
 
-    def insert_events(self, game_uuid: UUID, events: Sequence[BaseEvent]) -> None:
+    def insert_events(self, events: Sequence[BaseEvent]) -> None:
         with self.transaction() as transaction:
             for event in events:
                 query = sa.insert(Eventlog).values(
-                    game_uuid=str(game_uuid),
+                    game_uuid=str(event.game_uuid),
                     name=event.name,
                     sequence=event.sequence,
                     player_uuid=str(event.player_uuid),

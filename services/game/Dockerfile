@@ -21,6 +21,7 @@ RUN poetry install --no-dev
 COPY db/ db/
 COPY domain/ domain/
 COPY endpoints/ endpoints/
+COPY clients/ clients/
 COPY service.py settings.py ./
 
 COPY ./entrypoint.sh .

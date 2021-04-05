@@ -8,3 +8,5 @@ class Config(BaseSettings):
     db_host: str
     db_port: str
     db_name: str
+
+    ws_frontend_host: str

@@ -79,11 +79,11 @@ async def websocket_handler(ws: WebSocket) -> None:
                 game_uuid = token_data.game_uuid
                 connection_uuid = connections.connect(game_uuid, ws)
 
+                await reply(ws, WSResponse(ok=True, error=None))
+
         elif msg["type"] == "close":
             await ws.close()
             break
-        elif msg["type"] == "echo":
-            await reply(ws, WSResponse(ok=True, error=None))
         elif msg["type"] == "command":
             if UUID(msg["data"]["command"]["game_uuid"]) != game_uuid:
                 await reply(ws, WSResponse(ok=False, error="Bad game reference"))
