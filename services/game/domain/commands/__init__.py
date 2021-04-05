@@ -1,3 +1,4 @@
+import json
 from collections import namedtuple
 from datetime import datetime
 from typing import ClassVar
@@ -17,6 +18,14 @@ class BaseCommand(BaseModel):
     player_uuid: UUID
     timestamp: datetime
     params: BaseModel
+
+    def json(self, *args, **kwargs) -> str:
+        return json.dumps(
+            {
+                "name": self.name,
+                **json.loads(super().json(*args, **kwargs)),
+            }
+        )
 
 
 class GameInitCommandParams(BaseModel):

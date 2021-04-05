@@ -1,4 +1,5 @@
-from typing import Any
+import json
+from typing import Any, Mapping
 from urllib.parse import urljoin
 
 from aiohttp import ClientResponseError as HTTPError
@@ -15,10 +16,10 @@ class Client:
 
         self._host = config.game_service_host
 
-    async def send_command(self, body: Any) -> None:
+    async def send_command(self, body: Mapping[str, Any]) -> None:
         async with ClientSession() as session:
             async with session.post(
-                urljoin(self._host, "/game/apply"), data=body
+                urljoin(self._host, "/game/apply"), json=json.loads(json.dumps(body))
             ) as resp:
                 try:
                     resp.raise_for_status()

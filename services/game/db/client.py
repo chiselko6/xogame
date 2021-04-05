@@ -1,16 +1,30 @@
 import json
 from contextlib import contextmanager
-from typing import Sequence
+from typing import Any, Dict, Sequence
 from uuid import UUID
 
 import sqlalchemy as sa
 from sqlalchemy import create_engine
 
-from domain import BaseEvent, load_event
+from domain.events.base import BaseEvent
+from domain.events.game import GameInitEvent, GameInitEventParams
+from domain.events.moves import MoveEvent, MoveEventParams
 from settings import Config
 
 from .models import Eventlog
-from .schemas.eventlog import BaseEvent as DBEvent
+
+
+def load_event(event: Dict[str, Any], params: Dict[str, Any]) -> BaseEvent:
+    game_event_params = [
+        (GameInitEvent, GameInitEventParams),
+        (MoveEvent, MoveEventParams),
+    ]
+
+    for event_param in game_event_params:
+        if event_param[0].name == event["name"]:
+            return event_param[0](**event, params=event_param[1](**params))
+
+    raise ValueError("Unknown event")
 
 
 class DBClient:
@@ -39,7 +53,7 @@ class DBClient:
             for db_event in db_events:
                 event_dict = dict(db_event._mapping)
                 params = json.loads(event_dict.pop("params"))
-                events.append(load_event(DBEvent(**event_dict, params=params)))
+                events.append(load_event(event_dict, params))
             return events
 
     def insert_events(self, events: Sequence[BaseEvent]) -> None:

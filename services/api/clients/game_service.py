@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from urllib.parse import urljoin
 from uuid import UUID
@@ -18,6 +19,7 @@ class Client:
 
     async def start_game(
         self,
+        game_uuid: UUID,
         *,
         grid_size: int,
         winning_line_length: int,
@@ -27,20 +29,21 @@ class Client:
         params = {
             "grid_width": grid_size,
             "grid_height": grid_size,
-            "initiator": initiator,
-            "opponent": opponent,
+            "initiator": str(initiator),
+            "opponent": str(opponent),
             "winning_line_length": winning_line_length,
         }
         payload = {
             "name": "game_init",
             "sequence": 1,
-            "player_uuid": initiator,
-            "timestamp": datetime.utcnow(),
+            "game_uuid": str(game_uuid),
+            "player_uuid": str(initiator),
+            "timestamp": str(datetime.utcnow()),
             "params": params,
         }
         async with ClientSession() as session:
             async with session.post(
-                urljoin(self._host, "/game/apply"), data=payload
+                urljoin(self._host, "/game/apply"), json=json.loads(json.dumps(payload))
             ) as resp:
                 try:
                     resp.raise_for_status()

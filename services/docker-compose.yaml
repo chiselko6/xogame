@@ -61,7 +61,7 @@ services:
     ports:
       - 8003:80
     depends_on:
-      - ws-frontend-service
+      - game-service
   api-db:
     image: postgres:12.0-alpine
     ports:

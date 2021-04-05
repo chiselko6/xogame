@@ -5,8 +5,8 @@ from uuid import UUID
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
+from clients.ws_frontend import Client
 from db.client import DBClient
-from domain import load_event
 from domain.commands import (BaseCommand, GameInitCommand,
                              GameInitCommandParams, MoveCommand,
                              MoveCommandParams, apply_command)
@@ -17,6 +17,8 @@ app = FastAPI()
 
 db_client = DBClient()
 db_client.init()
+
+ws_client = Client()
 
 
 class CommandSchema(BaseModel):
@@ -50,9 +52,7 @@ async def handle_event(command: CommandSchema):
     game_uuid = command.game_uuid
     command_event = apply_command(load_command(command))
 
-    game_events = [
-        load_event(db_event) for db_event in db_client.get_game_events(game_uuid)
-    ]
+    game_events = db_client.get_game_events(game_uuid)
 
     # verify the event is applicable
     reducer = Reducer()
@@ -62,10 +62,12 @@ async def handle_event(command: CommandSchema):
     # save the event
     db_client.insert_events([command_event])
 
+    await ws_client.broadcast(command_event)
+
 
 @app.get("/fetch/{game_uuid}", response_model=List[BaseEvent])
 async def fetch_events(game_uuid: UUID):
-    events = [load_event(db_event) for db_event in db_client.get_game_events(game_uuid)]
+    events = db_client.get_game_events(game_uuid)
 
     if not events:
         raise HTTPException(status_code=404, detail="Game not found")

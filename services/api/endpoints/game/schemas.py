@@ -5,11 +5,6 @@ from uuid import UUID
 from pydantic import BaseModel
 
 
-class GameCreateRequest(BaseModel):
-    size: int
-    winning_line_length: int
-
-
 class GameCreateResponse(BaseModel):
     game_uuid: UUID
 

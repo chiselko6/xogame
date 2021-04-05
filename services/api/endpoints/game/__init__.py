@@ -10,7 +10,7 @@ from db.schemas.game import Game as GameSchema
 from ..auth import oauth2_scheme
 from ..auth.util import decode_auth_token
 from .schemas import (AwaitingGame, AwaitingGamesResponse, ConnectGameRequest,
-                      GameCreateRequest, GameCreateResponse)
+                      GameCreateResponse)
 
 app = FastAPI()
 
@@ -21,7 +21,7 @@ game_service_client = Client()
 
 
 @app.post("/", response_model=GameCreateResponse)
-async def create_game(game: GameCreateRequest, token: str = Depends(oauth2_scheme)):
+async def create_game(token: str = Depends(oauth2_scheme)):
     decoded = decode_auth_token(token)
 
     player = db_client.get_player_by_username(decoded.username)
@@ -58,6 +58,7 @@ async def connect(game: ConnectGameRequest, token: str = Depends(oauth2_scheme))
 
     # currently hardcoded params, but should be stored and retrieved
     await game_service_client.start_game(
+        game.uuid,
         grid_size=6,
         winning_line_length=4,
         initiator=db_game.player_created,

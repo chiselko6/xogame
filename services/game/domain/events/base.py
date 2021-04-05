@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from typing import ClassVar
 from uuid import UUID
@@ -13,3 +14,11 @@ class BaseEvent(BaseModel):
     player_uuid: UUID
     timestamp: datetime
     params: BaseModel
+
+    def json(self, *args, **kwargs) -> str:
+        return json.dumps(
+            {
+                "name": self.name,
+                **json.loads(super().json(*args, **kwargs)),
+            }
+        )

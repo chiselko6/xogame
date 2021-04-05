@@ -1,3 +1,4 @@
+import json
 from collections import defaultdict
 from typing import MutableMapping, MutableSet, Optional, Sequence
 from uuid import UUID, uuid4
@@ -7,7 +8,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from clients.exceptions import ClientResponseError
 from clients.game_service import Client as GameServiceClient
 from schemas.auth import decode_token
-from schemas.msg import BroadcastMessage, WSResponse
+from schemas.msg import BroadcastEvent, WSResponse
 
 app = FastAPI()
 game_service = GameServiceClient()
@@ -86,15 +87,17 @@ async def websocket_handler(ws: WebSocket) -> None:
             await ws.close()
             break
         elif msg["type"] == "command":
-            if UUID(msg["data"]["command"]["game_uuid"]) != game_uuid:
+            if UUID(msg["data"]["game_uuid"]) != game_uuid:
                 await reply(ws, WSResponse(ok=False, error="Bad game reference"))
             else:
                 try:
-                    await game_service.send_command(msg["data"]["command"])
+                    await game_service.send_command(msg["data"])
                 except ClientResponseError:
                     await reply(
                         ws, WSResponse(ok=False, error="Error applying the command")
                     )
+                else:
+                    await reply(ws, WSResponse(ok=True, error=None))
         else:
             await reply(ws, WSResponse(ok=False, error="Unknown message"))
 
@@ -105,6 +108,8 @@ async def websocket_handler(ws: WebSocket) -> None:
 
 
 @app.post("/broadcast")
-async def publish_msg(message: BroadcastMessage):
+async def publish_msg(message: BroadcastEvent):
     for connection in connections.get_connections(message.game_uuid):
-        await connection.send_json(message.payload)
+        await connection.send_json(
+            {"type": "broadcast", "data": json.loads(message.json())}
+        )

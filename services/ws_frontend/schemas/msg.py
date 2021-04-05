@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Dict, Optional
 from uuid import UUID
 
@@ -9,6 +10,10 @@ class WSResponse(BaseModel):
     error: Optional[str]
 
 
-class BroadcastMessage(BaseModel):
+class BroadcastEvent(BaseModel):
+    name: str
     game_uuid: UUID
-    payload: Dict[str, Any]
+    sequence: int
+    player_uuid: UUID
+    timestamp: datetime
+    params: Dict[str, Any]

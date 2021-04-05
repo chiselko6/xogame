@@ -1,3 +1,4 @@
+import json
 from urllib.parse import urljoin
 
 from aiohttp import ClientResponseError as HTTPError
@@ -18,7 +19,7 @@ class Client:
     async def broadcast(self, event: BaseEvent) -> None:
         async with ClientSession() as session:
             async with session.post(
-                urljoin(self._host, "/broadcast"), data=event.json()
+                urljoin(self._host, "/broadcast"), json=json.loads(event.json())
             ) as resp:
                 try:
                     resp.raise_for_status()
